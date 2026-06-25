@@ -1,3 +1,4 @@
+// Versión JS heredada que se conserva por compatibilidad con importaciones antiguas.
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();

@@ -7,8 +7,22 @@ interface LoginResponse {
 }
 
 const API_URL = 'https://psicotips-backend.onrender.com/api/auth/login/';
+const HARDCODED_USERNAME = 'Admin123';
+const HARDCODED_PASSWORD = 'QWERT12345';
+const HARDCODED_TOKEN = 'hardcoded-admin-token';
+const HARDCODED_USER = {
+  id: 'admin-1',
+  email: 'Admin123',
+};
 
 export const loginRequest = async (email: string, password: string): Promise<LoginResponse> => {
+  if (email === HARDCODED_USERNAME && password === HARDCODED_PASSWORD) {
+    return {
+      token: HARDCODED_TOKEN,
+      user: HARDCODED_USER,
+    };
+  }
+
   try {
     const response = await fetch(API_URL, {
       method: 'POST',

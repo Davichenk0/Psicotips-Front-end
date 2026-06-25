@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { loginRequest } from '../services/authService';
-import { useAuth } from '../context/AuthContext.js';
+import { useAuth } from '../context/AuthContext';
+import logoPsicotips from '../assets/Logo.png';
 
 export const LoginForm: React.FC = () => {
   const { login } = useAuth();
@@ -9,20 +10,18 @@ export const LoginForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // TypeScript nos exige tipar el evento de envío del formulario
+  // El manejador de envío controla la validación, el estado de carga y el traspaso a autenticación.
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      // 1. Llamamos al servicio con los datos de los inputs
+      // Delegar la validación de credenciales a la capa de servicios.
       const data = await loginRequest(email, password);
       
-      // 2. Si todo sale bien, guardamos el token y el usuario en el Contexto global
+      // Persistir el usuario autenticado en el estado global.
       login(data.token, data.user);
-      
-      alert('¡Inicio de sesión exitoso!');
     } catch (err: any) {
       setError(err.message || 'Ocurrió un error inesperado');
     } finally {
@@ -33,17 +32,22 @@ export const LoginForm: React.FC = () => {
   return (
     <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
       <h2>Iniciar Sesión en Psicotips</h2>
+
+      {/* Logo centrado sobre el formulario para anclar visualmente la pantalla de acceso. */}
+    <img 
+      src={logoPsicotips} alt="Logo Psicotips" style={{ display: 'block', margin: '0 auto', width: '200px', height: 'auto', marginBottom: '15px' }} />
       
       {error && <p style={{ color: 'red' }}>{error}</p>}
       
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Correo Electrónico:</label>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Usuario:</label>
           <input
-            type="email"
+            type="text"
             value={email}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             required
+            placeholder="Admin123"
             style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
           />
         </div>
@@ -55,10 +59,12 @@ export const LoginForm: React.FC = () => {
             value={password}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             required
+            placeholder="QWERT12345"
             style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
           />
         </div>
         
+        {/* Deshabilitar el botón mientras la petición está en curso para evitar envíos duplicados. */}
         <button type="submit" disabled={loading} style={{ width: '100%', padding: '10px', backgroundColor: '#0070f3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
           {loading ? 'Cargando...' : 'Ingresar'}
         </button>

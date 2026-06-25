@@ -1,0 +1,281 @@
+/* Estilos heredados de clientes que se conservan para el layout anterior y patrones reutilizables. */
+.client-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  color: #f8fafc;
+}
+
+/* El bloque del encabezado agrupa título, contador y acciones. */
+.client-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* La línea superior del encabezado alinea el título con la acción principal. */
+.client-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Título de la sección. */
+.client-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* Contador o subtítulo debajo del encabezado. */
+.client-count {
+  margin: 0.25rem 0 0;
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+/* Fila de acciones para los botones del encabezado. */
+.client-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Botón principal para agregar un nuevo cliente. */
+.client-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.client-button:hover {
+  background: #1d4ed8;
+}
+
+/* Contenedor de búsqueda y filtro. */
+.client-search-bar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Contenedor del campo de búsqueda con icono. */
+.client-search {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.client-search input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border-radius: 0.75rem;
+  border: 1px solid #334155;
+  background: #0f1720;
+  color: #e2e8f0;
+}
+
+.client-search input::placeholder {
+  color: #94a3b8;
+}
+
+.client-search svg {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+/* Botón para abrir las opciones de filtro. */
+.client-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #334155;
+  border-radius: 0.75rem;
+  background: #0f1720;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+/* Contenedor principal de la tabla. */
+.client-table-container {
+  background: #0b1220;
+  border: 1px solid #334155;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* Envoltorio desplazable para la tabla. */
+.client-table-scroll {
+  overflow: auto;
+  max-height: 55vh;
+}
+
+/* Estilos generales de la tabla. */
+.client-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.client-table th,
+.client-table td {
+  padding: 1rem 1.2rem;
+}
+
+/* Estilos del encabezado de la tabla. */
+.client-table th {
+  background: #0c1522;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #334155;
+  text-align: left;
+}
+
+/* Fila de cliente y efecto hover. */
+.client-row {
+  border-bottom: 1px solid #334155;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.client-row:hover {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+/* Celda común de la tabla. */
+.client-cell {
+  vertical-align: middle;
+}
+
+/* Estilo del avatar circular. */
+.client-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: #0e1726;
+  color: #7dd3fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid #334155;
+}
+
+/* Contenedor de la información de nombre y compañía. */
+.client-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Estilo del nombre del cliente. */
+.client-name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+/* Estilo del nombre de la compañía y su icono. */
+.client-company {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Chip de estado común. */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Estilos para el estado Activo. */
+.status-activo {
+  background: rgba(16, 185, 129, 0.12);
+  color: #86efac;
+  border: 1px solid rgba(16, 185, 129, 0.24);
+}
+
+/* Estilos para el estado Prospecto. */
+.status-prospecto {
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.24);
+}
+
+/* Estilos para el estado Inactivo. */
+.status-inactivo {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+/* Icono de flecha para navegación. */
+.icon-right {
+  color: #94a3b8;
+}
+
+/* Mensaje cuando no hay resultados. */
+.client-empty {
+  padding: 2rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+/* Estilos responsivos para pantallas medianas. */
+@media (max-width: 780px) {
+  .client-table {
+    min-width: unset;
+  }
+
+  .client-table th:nth-child(4),
+  .client-table td:nth-child(4) {
+    display: none;
+  }
+}
+
+/* Estilos responsivos para pantallas pequeñas. */
+@media (max-width: 540px) {
+  .client-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .client-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .client-search-bar {
+    flex-direction: column;
+  }
+
+  .client-filter {
+    width: 100%;
+    justify-content: center;
+  }
+}

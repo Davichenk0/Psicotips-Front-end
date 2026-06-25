@@ -1,38 +1,522 @@
-.App {
-  text-align: center;
+/* Estructura principal: barra de navegación estrecha + área de contenido amplia. */
+.app-shell {
+	display: flex;
+	min-height: 100vh;
+	background: #03050a;
+	color: #e7eaf0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Lienzo principal para el contenido del dashboard. */
+.app-main {
+	flex: 1;
+	overflow: hidden;
+	background: linear-gradient(180deg, #03050a 0%, #04070d 100%);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* La barra de utilidades se mantiene delgada para que la tabla siga siendo el foco visual. */
+.topbar {
+	display: flex;
+	height: 40px;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	padding: 0 16px 0 24px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.topbar-search {
+	position: relative;
+	width: min(100%, 330px);
+	max-width: 42vw;
 }
 
-.App-link {
-  color: #61dafb;
+.topbar-search input {
+	width: 100%;
+	height: 24px;
+	border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.09);
+	background: #060913;
+	padding: 0 16px 0 34px;
+	font-size: 12px;
+	color: #edf0f7;
+	outline: none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.topbar-search input::placeholder,
+.table-search input::placeholder {
+	color: #7c8190;
+}
+
+.topbar-search input:focus,
+.table-search input:focus {
+	border-color: rgba(79, 124, 255, 0.65);
+}
+
+.topbar-search-icon {
+	position: absolute;
+	left: 12px;
+	top: 5px;
+	color: #6d7280;
+}
+
+.topbar-actions {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	color: #8b90a0;
+}
+
+.icon-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	transition: color 0.18s ease;
+}
+
+.icon-button:hover {
+	color: #e7ebf3;
+}
+
+.topbar-avatar {
+	display: inline-flex;
+	height: 24px;
+	width: 24px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: #0f1726;
+	color: #87a5ff;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+}
+
+.topbar-logout {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	border: 1px solid rgba(255, 255, 255, 0.09);
+	border-radius: 999px;
+	background: #0a0d14;
+	padding: 5px 12px;
+	color: #dfe5f4;
+	font-size: 11px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.topbar-logout:hover {
+	background: #111625;
+	border-color: rgba(79, 124, 255, 0.35);
+	color: #ffffff;
+}
+
+/* La barra lateral replica la franja oscura compacta de la imagen de referencia. */
+.sidebar {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 205px;
+	min-height: 100vh;
+	border-right: 1px solid rgba(255, 255, 255, 0.08);
+	background: #04070d;
+	color: #8d93a3;
+	flex-shrink: 0;
+}
+
+.sidebar-brand {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	padding: 16px 16px 14px;
+	font-size: 15px;
+	font-weight: 600;
+	color: #ffffff;
+}
+
+.sidebar-brand-mark {
+	display: inline-flex;
+	height: 32px;
+	width: 32px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: #4f7cff;
+	color: #ffffff;
+	box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25);
+}
+
+.sidebar-menu {
+	padding: 14px 12px;
+}
+
+.sidebar-section-label {
+	margin: 0 0 10px;
+	padding: 0 8px;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	color: #5d6271;
+}
+
+.sidebar-menu-item {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	gap: 12px;
+	border: 0;
+	border-radius: 12px;
+	background: transparent;
+	padding: 10px 12px;
+	font-size: 13px;
+	font-weight: 500;
+	color: inherit;
+	cursor: pointer;
+	transition: background 0.18s ease, color 0.18s ease;
+}
+
+.sidebar-menu-item:hover {
+	background: rgba(255, 255, 255, 0.05);
+	color: #e7eaf0;
+}
+
+.sidebar-menu-item--active {
+	background: #101726;
+	color: #4f7cff;
+	box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.08);
+}
+
+.sidebar-menu-arrow {
+	margin-left: auto;
+	color: #4f7cff;
+}
+
+.sidebar-footer {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+	padding: 12px 16px;
+	font-size: 12px;
+}
+
+.sidebar-footer-avatar {
+	display: inline-flex;
+	height: 32px;
+	width: 32px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	background: #0f1522;
+	color: #ffffff;
+	font-weight: 700;
+}
+
+.sidebar-footer-name {
+	margin: 0;
+	font-weight: 500;
+	color: #dbe2f0;
+}
+
+.sidebar-footer-email {
+	margin: 2px 0 0;
+	font-size: 10px;
+	color: #727887;
+}
+
+/* El contenedor de la página está centrado y con espacio amplio por diseño. */
+.clients-page {
+	width: 100%;
+	max-width: 1040px;
+	margin: 0 auto;
+	padding: 56px 24px 32px;
+}
+
+.clients-header {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.clients-title {
+	margin: 0;
+	font-family: Georgia, 'Times New Roman', serif;
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1;
+	color: #efefef;
+}
+
+.clients-subtitle {
+	margin: 10px 0 0;
+	font-size: 13px;
+	color: #7f8594;
+}
+
+.new-client-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	border: 0;
+	border-radius: 6px;
+	background: #4f7cff;
+	padding: 8px 16px;
+	color: #081122;
+	font-size: 13px;
+	font-weight: 600;
+	box-shadow: 0 0 0 1px rgba(79, 124, 255, 0.35);
+	cursor: pointer;
+	transition: background 0.18s ease;
+}
+
+.new-client-button:hover {
+	background: #5d88ff;
+}
+
+.clients-content {
+	margin-top: 32px;
+}
+
+/* La barra de búsqueda y filtro se ubica justo encima de la tarjeta. */
+.table-toolbar {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin-bottom: 18px;
+}
+
+.table-search {
+	position: relative;
+	flex: 1;
+}
+
+.table-search input {
+	width: 100%;
+	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.09);
+	background: #0a0d14;
+	padding: 11px 16px 11px 40px;
+	font-size: 13px;
+	color: #edf0f7;
+	outline: none;
+}
+
+.table-search-icon {
+	position: absolute;
+	left: 14px;
+	top: 12px;
+	color: #6c7280;
+}
+
+.table-filter {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.09);
+	background: #0a0d14;
+	padding: 11px 14px;
+	color: #8a90a0;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+/* La tarjeta de la tabla establece la superficie principal de datos. */
+.table-card {
+	overflow: hidden;
+	border-radius: 16px;
+	border: 1px solid rgba(255, 255, 255, 0.09);
+	background: #0a0d14;
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+/* El layout fijo mantiene las columnas visualmente estables. */
+.clients-table {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: left;
+	table-layout: fixed;
+}
+
+.clients-table thead tr {
+	background: #171b23;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+	color: #6f7482;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.18em;
+}
+
+.clients-table th,
+.clients-table td {
+	padding: 14px 20px;
+	vertical-align: middle;
+}
+
+.clients-table th:first-child,
+.clients-table td:first-child {
+	padding-left: 20px;
+	width: 54%;
+}
+
+.clients-table th:nth-child(2),
+.clients-table td:nth-child(2) {
+	width: 13%;
+	text-align: center;
+}
+
+.clients-table th:nth-child(3),
+.clients-table td:nth-child(3) {
+	width: 12%;
+	text-align: center;
+}
+
+.clients-table th:nth-child(4),
+.clients-table td:nth-child(4) {
+	width: 15%;
+	text-align: center;
+}
+
+.clients-table th:last-child,
+.clients-table td:last-child {
+	width: 6%;
+	text-align: right;
+	padding-right: 16px;
+}
+
+/* Los separadores de fila son sutiles para mantener la lista legible. */
+.client-row {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+	transition: background 0.18s ease;
+}
+
+.client-row:hover {
+	background: rgba(255, 255, 255, 0.018);
+}
+
+.client-cell {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.client-avatar {
+	display: inline-flex;
+	height: 28px;
+	width: 28px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: #1a2235;
+	color: #4f7cff;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+.client-name {
+	font-size: 13px;
+	font-weight: 600;
+	color: #e7eaf0;
+}
+
+.client-row:hover .client-name {
+	color: #ffffff;
+}
+
+.client-company {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 2px;
+	font-size: 11px;
+	color: #727887;
+}
+
+.client-company-icon {
+	opacity: 0.7;
+	font-size: 10px;
+}
+
+/* Cápsula compartida para los valores de estado de la fila. */
+.status-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 56px;
+	padding: 4px 10px;
+	border-radius: 999px;
+	border: 1px solid transparent;
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.status-badge--active {
+	background: rgba(16, 185, 129, 0.16);
+	border-color: rgba(16, 185, 129, 0.1);
+	color: #34d399;
+}
+
+.status-badge--prospect {
+	background: rgba(59, 130, 246, 0.16);
+	border-color: rgba(59, 130, 246, 0.1);
+	color: #60a5fa;
+}
+
+.status-badge--inactive {
+	background: rgba(100, 116, 139, 0.22);
+	border-color: rgba(100, 116, 139, 0.12);
+	color: #94a3b8;
+}
+
+.table-text {
+	font-size: 12px;
+	color: #8b90a0;
+}
+
+.row-arrow {
+	color: #5e6472;
+	transition: color 0.18s ease;
+}
+
+.client-row:hover .row-arrow {
+	color: #8b90a0;
+}
+
+/* Los ajustes responsivos preservan la jerarquía del layout en pantallas estrechas. */
+@media (max-width: 1180px) {
+	.clients-page {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+}
+
+@media (max-width: 980px) {
+	.app-shell {
+		flex-direction: column;
+	}
+
+	.sidebar {
+		width: 100%;
+		height: auto;
+	}
+
+	.clients-page {
+		padding-top: 32px;
+	}
+
+	.clients-header {
+		align-items: flex-start;
+		flex-direction: column;
+	}
 }

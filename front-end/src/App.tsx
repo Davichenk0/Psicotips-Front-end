@@ -1,17 +1,16 @@
 import React from 'react';
-import { LoginForm } from './components/LoginForm.js';
-import { useAuth } from './context/AuthContext.js';
+import { LoginForm } from './components/LoginForm';
+import { useAuth } from './context/AuthContext';
+import { Dashboard } from './components/Dashboard';
 
 function App() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="App">
+      {/* Mostrar el dashboard solo cuando la autenticación ya tenga una sesión activa. */}
       {user ? (
-        <div style={{ padding: '20px' }}>
-          <h1>Bienvenido, {user.email}</h1>
-          <button onClick={logout}>Cerrar Sesión</button>
-        </div>
+        <Dashboard />
       ) : (
         <LoginForm />
       )}
