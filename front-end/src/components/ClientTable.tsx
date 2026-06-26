@@ -3,10 +3,12 @@ import { useClients } from '../context/ClientContext';
 import { ClientRow } from './ClientRow';
 import { ChevronDown, Search, SlidersHorizontal } from 'lucide-react';
 
+// El componente ClientTable es responsable de mostrar la lista de clientes en una tabla con funcionalidad de búsqueda y filtrado.
 export const ClientTable = () => {
   const { clients, searchTerm, setSearchTerm } = useClients();
 
   // El filtrado de clientes se mantiene local para que la escritura responda al instante.
+  // Filtra los clientes por nombre o empresa según el término de búsqueda ingresado.
   const filteredClients = clients.filter(client =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.company.toLowerCase().includes(searchTerm.toLowerCase())

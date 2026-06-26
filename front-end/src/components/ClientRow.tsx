@@ -11,10 +11,10 @@ const statusStyles = {
 export const ClientRow = ({ client }: { client: Client }) => {
   // Generar una etiqueta corta para el avatar a partir de las iniciales del cliente.
   const initials = client.name
-    .split(' ')
-    .map((word) => word[0])
-    .join('')
-    .substring(0, 2);
+    .split(' ')                 // Divide el nombre completo en palabras por cada espacio.
+    .map((word) => word[0])     // Toma la primera letra de cada palabra.
+    .join('')                   // Une esas letras en una sola cadena de texto.
+    .substring(0, 2);           // Se asegura de recortar el resultado a un máximo de 2 letras.
 
   // Cada fila es un registro de solo lectura con un hover sutil.
   return (
@@ -32,12 +32,15 @@ export const ClientRow = ({ client }: { client: Client }) => {
         </div>
       </td>
       <td>
-        <span className={statusStyles[client.status]}>{client.status}</span>
+        <span className={statusStyles[client.status]}>{client.status}</span> 
+        {/* El resultado en el navegador será un texto que dice "Activo" envuelto en un óvalo */}
       </td>
       <td className="table-text">{client.channel}</td>
       <td className="table-text">{client.registrationDate}</td>
+        {/*Muestran de dónde vino el cliente (ej. Especializado, Orgánico, Web) y cuándo se registró*/}
       <td>
         <ChevronRight size={16} className="row-arrow" />
+        {/* Icono de flecha que indica que se puede hacer clic en la fila para ver más detalles */}
       </td>
     </tr>
   );

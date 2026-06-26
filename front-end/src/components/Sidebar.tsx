@@ -4,12 +4,12 @@ import { ChevronRight, GraduationCap, LayoutDashboard, MessageSquare, FileText, 
 export const Sidebar = () => {
   // El estado activo queda fijo en el módulo de Clientes en esta vista.
   const menuItems = [
-    { name: 'Resumen', icon: <LayoutDashboard size={16} />, active: false },
-    { name: 'Clientes', icon: <Users size={16} />, active: true },
-    { name: 'Conversaciones', icon: <MessageSquare size={16} />, active: false },
-    { name: 'Requerimientos', icon: <FileText size={16} />, active: false },
-    { name: 'Propuestas', icon: <Briefcase size={16} />, active: false },
-    { name: 'Conocimiento', icon: <GraduationCap size={16} />, active: false },
+    { name: 'Resumen', icon: <LayoutDashboard size={16} />, active: false },        // Elemento de menú que representa la sección de resumen del dashboard.
+    { name: 'Clientes', icon: <Users size={16} />, active: true },                  // Elemento de menú que representa la sección de clientes del dashboard, actualmente activo.
+    { name: 'Conversaciones', icon: <MessageSquare size={16} />, active: false },   // Elemento de menú que representa la sección de conversaciones del dashboard.
+    { name: 'Requerimientos', icon: <FileText size={16} />, active: false },        // Elemento de menú que representa la sección de requerimientos del dashboard.
+    { name: 'Propuestas', icon: <Briefcase size={16} />, active: false },           // Elemento de menú que representa la sección de propuestas del dashboard.
+    { name: 'Conocimiento', icon: <GraduationCap size={16} />, active: false },     // Elemento de menú que representa la sección de conocimiento del dashboard.
   ];
 
   return (

@@ -3,16 +3,16 @@ import { loginRequest } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import logoPsicotips from '../assets/Logo.png';
 
-export const LoginForm: React.FC = () => {
-  const { login } = useAuth();
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+export const LoginForm: React.FC = () => {                 // Componente funcional que representa el formulario de inicio de sesión.
+  const { login } = useAuth();                             // Hook personalizado para acceder a la función de inicio de sesión del contexto de autenticación.
+  const [email, setEmail] = useState<string>('');          // Estado local para almacenar el correo electrónico ingresado por el usuario.
+  const [password, setPassword] = useState<string>('');    // Estado local para almacenar la contraseña ingresada por el usuario.
+  const [error, setError] = useState<string | null>(null); // Estado local para almacenar mensajes de error relacionados con el inicio de sesión.
+  const [loading, setLoading] = useState<boolean>(false);  // Estado local para indicar si la solicitud de inicio de sesión está en curso.
 
   // El manejador de envío controla la validación, el estado de carga y el traspaso a autenticación.
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault();  // Prevenir el comportamiento por defecto del formulario para evitar recargas de página.
     setError(null);
     setLoading(true);
 
