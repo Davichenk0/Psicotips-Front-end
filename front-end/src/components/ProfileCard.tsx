@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ProfileCardProps {
-	email?: string;
+	email?: string;  // Propiedad opcional que representa el correo electrónico del usuario.
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ email }) => {
