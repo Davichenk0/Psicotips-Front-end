@@ -3,11 +3,13 @@ import { Bell, LogOut, Search, Settings, UserPlus } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { ClientTable } from './ClientTable';
 import { useAuth } from '../context/AuthContext';
+import { useClients } from '../context/ClientContext';
 
 // El componente Dashboard es responsable de mostrar la interfaz principal de la aplicación, 
 // incluyendo la barra lateral, la barra superior y la tabla de clientes.
 export const Dashboard = () => {
 	const { logout } = useAuth();
+	const { clients, loading, error } = useClients();
 
 	return (
 		<div className="app-shell">
@@ -51,7 +53,13 @@ export const Dashboard = () => {
 						<div>
 							{/* Título y subtítulo de la sección de clientes, proporcionando contexto al usuario. */}
 							<h1 className="clients-title">Clientes</h1>
-							<p className="clients-subtitle">7 clientes registrados</p>
+							<p className="clients-subtitle">
+								{loading
+									? 'Cargando clientes...'
+									: error
+										? 'No se pudieron cargar los clientes'
+										: `${clients.length} clientes registrados`}
+							</p>
 						</div>
 
 						{/* Botón para agregar un nuevo cliente */}

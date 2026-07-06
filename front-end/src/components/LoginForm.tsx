@@ -41,13 +41,13 @@ export const LoginForm: React.FC = () => {                 // Componente funcion
       
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Usuario:</label>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Correo electronico:</label>
           <input
-            type="text"
+            type="email"
             value={email}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             required
-            placeholder="Admin123"
+            placeholder="correo@empresa.com"
             style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
           />
         </div>
