@@ -5,7 +5,7 @@ import { ChevronDown, Search, SlidersHorizontal } from 'lucide-react';
 
 // El componente ClientTable es responsable de mostrar la lista de clientes en una tabla con funcionalidad de búsqueda y filtrado.
 export const ClientTable = () => {
-  const { clients, searchTerm, setSearchTerm } = useClients();
+  const { clients, loading, error, searchTerm, setSearchTerm } = useClients();
 
   // El filtrado de clientes se mantiene local para que la escritura responda al instante.
   // Filtra los clientes por nombre o empresa según el término de búsqueda ingresado.
@@ -47,7 +47,22 @@ export const ClientTable = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredClients.map((client) => (
+            {loading && (
+              <tr>
+                <td colSpan={5} className="table-text">Cargando clientes...</td>
+              </tr>
+            )}
+            {!loading && error && (
+              <tr>
+                <td colSpan={5} className="table-text">{error}</td>
+              </tr>
+            )}
+            {!loading && !error && filteredClients.length === 0 && (
+              <tr>
+                <td colSpan={5} className="table-text">No hay clientes para mostrar.</td>
+              </tr>
+            )}
+            {!loading && !error && filteredClients.map((client) => (
               <ClientRow key={client.id} client={client} />
             ))}
           </tbody>
