@@ -1,22 +1,23 @@
 import React from 'react';
-import { Bell, LogOut, Search, Settings, UserPlus } from 'lucide-react';
+import { Routes, Route } from 'react-router-dom';
+import { Bell, LogOut, Search, Settings } from 'lucide-react';
 import { Sidebar } from './Sidebar';
-import { ClientTable } from './ClientTable';
+import { ClientsPage } from './pages/ClientsPage';
+import { ConversationsPage } from './pages/ConversationsPage';
+import { RequirementsPage } from './pages/RequirementsPage';
 import { useAuth } from '../context/AuthContext';
-import { useClients } from '../context/ClientContext';
 
-// El componente Dashboard es responsable de mostrar la interfaz principal de la aplicación, 
-// incluyendo la barra lateral, la barra superior y la tabla de clientes.
+// El componente Dashboard es responsable de mostrar la interfaz principal de la aplicación,
+// incluyendo la barra lateral, la barra superior y el contenido de la página activa.
 export const Dashboard = () => {
 	const { logout } = useAuth();
-	const { clients, loading, error } = useClients();
 
 	return (
 		<div className="app-shell">
 			<Sidebar />
 
 			<main className="app-main">
-				{/* La barra superior mantiene las acciones ligeras y separadas de la tabla. */}
+				{/* La barra superior mantiene las acciones ligeras y separadas del contenido. */}
 				<header className="topbar">
 					<label className="topbar-search">
 						<Search className="topbar-search-icon" size={14} />
@@ -47,35 +48,12 @@ export const Dashboard = () => {
 					</div>
 				</header>
 
-				{/* El contenido principal está centrado para coincidir con la captura. */}
-				<section className="clients-page">
-					<div className="clients-header">
-						<div>
-							{/* Título y subtítulo de la sección de clientes, proporcionando contexto al usuario. */}
-							<h1 className="clients-title">Clientes</h1>
-							<p className="clients-subtitle">
-								{loading
-									? 'Cargando clientes...'
-									: error
-										? 'No se pudieron cargar los clientes'
-										: `${clients.length} clientes registrados`}
-							</p>
-						</div>
-
-						{/* Botón para agregar un nuevo cliente */}
-						<button
-							type="button"
-							className="new-client-button"
-						>
-							<UserPlus size={15} />
-							Nuevo cliente
-						</button>
-					</div>
-
-					<div className="clients-content">
-						<ClientTable />
-					</div>
-				</section>
+				{/* El contenido cambia según la ruta activa (Clientes, Conversaciones o Requerimientos). */}
+				<Routes>
+					<Route path="/" element={<ClientsPage />} />
+					<Route path="/conversaciones" element={<ConversationsPage />} />
+					<Route path="/requerimientos" element={<RequirementsPage />} />
+				</Routes>
 			</main>
 		</div>
 	);

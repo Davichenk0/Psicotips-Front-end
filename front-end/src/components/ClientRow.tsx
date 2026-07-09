@@ -1,5 +1,5 @@
 import React from 'react';
-import { Client } from '../context/ClientContext';
+import { Client, useClients } from '../context/ClientContext';
 import { ChevronRight } from 'lucide-react';
 
 const statusStyles = {
@@ -9,6 +9,8 @@ const statusStyles = {
 };
 
 export const ClientRow = ({ client }: { client: Client }) => {
+  // Al hacer clic en la fila se abre el panel de detalle con info, conversaciones y requerimientos del cliente.
+  const { setSelectedClient } = useClients();
   // Generar una etiqueta corta para el avatar a partir de las iniciales del cliente.
   const initials = client.name
     .split(' ')                 // Divide el nombre completo en palabras por cada espacio.
@@ -16,9 +18,19 @@ export const ClientRow = ({ client }: { client: Client }) => {
     .join('')                   // Une esas letras en una sola cadena de texto.
     .substring(0, 2);           // Se asegura de recortar el resultado a un máximo de 2 letras.
 
-  // Cada fila es un registro de solo lectura con un hover sutil.
+  // Cada fila es clicable: abre el panel de detalle del cliente con hover sutil.
   return (
-    <tr className="client-row">
+    <tr
+      className="client-row client-row--clickable"
+      onClick={() => setSelectedClient(client)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          setSelectedClient(client);
+        }
+      }}
+    >
       <td>
         <div className="client-cell">
           <div className="client-avatar">{initials}</div>

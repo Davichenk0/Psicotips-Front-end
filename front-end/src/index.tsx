@@ -6,6 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/AuthContext';
 import { ClientProvider } from './context/ClientContext';
+import { BrowserRouter } from 'react-router-dom';
 
 // Los proveedores raíz mantienen disponibles el estado de autenticación y de clientes en toda la app.
 const root = ReactDOM.createRoot(
@@ -14,11 +15,13 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <ClientProvider>
-        <App />
-      </ClientProvider>
-    </AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <ClientProvider>
+          <App />
+        </ClientProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
