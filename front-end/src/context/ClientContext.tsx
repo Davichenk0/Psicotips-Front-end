@@ -7,6 +7,10 @@ export interface Client {
   id: string;
   name: string;
   company: string;
+  email?: string;
+  phone?: string;
+  category?: string;
+  notes?: string;
   status: 'Activo' | 'Prospecto' | 'Inactivo';
   channel: string;
   registrationDate: string;

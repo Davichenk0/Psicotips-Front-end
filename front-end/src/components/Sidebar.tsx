@@ -1,17 +1,16 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronRight, GraduationCap, LayoutDashboard, MessageSquare, FileText, Briefcase, Users, Zap } from 'lucide-react';
+import { ChevronRight, GraduationCap, LayoutDashboard, Briefcase, Users, Zap } from 'lucide-react';
 
 export const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   // Cada elemento con "path" navega de verdad; los que no tienen path siguen siendo decorativos por ahora.
+  // "Conversaciones" y "Requerimientos" ya no van aquí: ahora viven dentro del perfil de cada cliente.
   const menuItems = [
     { name: 'Resumen', icon: <LayoutDashboard size={16} />, path: null },
     { name: 'Clientes', icon: <Users size={16} />, path: '/' },
-    { name: 'Conversaciones', icon: <MessageSquare size={16} />, path: '/conversaciones' },
-    { name: 'Requerimientos', icon: <FileText size={16} />, path: '/requerimientos' },
     { name: 'Propuestas', icon: <Briefcase size={16} />, path: null },
     { name: 'Conocimiento', icon: <GraduationCap size={16} />, path: null },
   ];

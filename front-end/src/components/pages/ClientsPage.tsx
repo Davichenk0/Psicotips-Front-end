@@ -1,10 +1,10 @@
 import React from 'react';
 import { UserPlus } from 'lucide-react';
 import { ClientTable } from '../ClientTable';
-import { ClientDetailPanel } from '../ClientDetailPanel';
 import { useClients } from '../../context/ClientContext';
 
-// Página de Clientes: tabla con búsqueda + panel lateral que se abre al seleccionar una fila.
+// Página de Clientes: tabla con búsqueda. Al hacer clic en una fila se navega
+// a la página de perfil completa del cliente (ver ClientProfilePage).
 export const ClientsPage = () => {
   const { clients, loading, error } = useClients();
 
@@ -31,9 +31,6 @@ export const ClientsPage = () => {
       <div className="clients-content">
         <ClientTable />
       </div>
-
-      {/* Panel de detalle: se muestra sobre esta página cuando hay un cliente seleccionado. */}
-      <ClientDetailPanel />
     </section>
   );
 };

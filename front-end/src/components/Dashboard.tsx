@@ -3,6 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import { Bell, LogOut, Search, Settings } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { ClientsPage } from './pages/ClientsPage';
+import { ClientProfilePage } from './pages/ClientProfilePage';
+import { RequirementDetailPage } from './pages/RequirementDetailPage';
+import { ProposalDetailPage } from './pages/ProposalDetailPage';
 import { ConversationsPage } from './pages/ConversationsPage';
 import { RequirementsPage } from './pages/RequirementsPage';
 import { useAuth } from '../context/AuthContext';
@@ -51,6 +54,9 @@ export const Dashboard = () => {
 				{/* El contenido cambia según la ruta activa (Clientes, Conversaciones o Requerimientos). */}
 				<Routes>
 					<Route path="/" element={<ClientsPage />} />
+					<Route path="/clientes/:clientId" element={<ClientProfilePage />} />
+					<Route path="/clientes/:clientId/requerimientos/:reqId" element={<RequirementDetailPage />} />
+					<Route path="/clientes/:clientId/propuestas/:proposalId" element={<ProposalDetailPage />} />
 					<Route path="/conversaciones" element={<ConversationsPage />} />
 					<Route path="/requerimientos" element={<RequirementsPage />} />
 				</Routes>

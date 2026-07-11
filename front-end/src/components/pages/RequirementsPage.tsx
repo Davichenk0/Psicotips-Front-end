@@ -89,7 +89,7 @@ export const RequirementsPage = () => {
               <dl className="detail-meta detail-meta--row">
                 <div className="detail-meta-item">
                   <Mail size={13} />
-                  <span>{selectedClient.company}</span>
+                  <span>{selectedClient.company || 'Sin empresa'}</span>
                 </div>
                 <div className="detail-meta-item">
                   <Radio size={13} />

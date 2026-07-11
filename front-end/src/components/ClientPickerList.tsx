@@ -52,7 +52,7 @@ export const ClientPickerList = () => {
                 <span className="picker-item-avatar">{initials}</span>
                 <span className="picker-item-text">
                   <span className="picker-item-name">{client.name}</span>
-                  <span className="picker-item-company">{client.company}</span>
+                  <span className="picker-item-company">{client.company || 'Sin empresa'}</span>
                 </span>
               </button>
             );

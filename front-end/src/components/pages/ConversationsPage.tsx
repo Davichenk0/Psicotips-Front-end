@@ -17,9 +17,9 @@ const statusStyles = {
 };
 
 const conversationStatusStyles: Record<Conversation['status'], string> = {
-  Abierta: 'conversation-status conversation-status--open',
-  'Esperando respuesta': 'conversation-status conversation-status--waiting',
-  Cerrada: 'conversation-status conversation-status--closed',
+  Activa: 'conversation-status conversation-status--open',
+  'En proceso': 'conversation-status conversation-status--waiting',
+  Finalizada: 'conversation-status conversation-status--closed',
 };
 
 const priorityStyles: Record<Requirement['priority'], string> = {
@@ -107,7 +107,7 @@ export const ConversationsPage = () => {
               <dl className="detail-meta detail-meta--row">
                 <div className="detail-meta-item">
                   <Mail size={13} />
-                  <span>{selectedClient.company}</span>
+                  <span>{selectedClient.company || 'Sin empresa'}</span>
                 </div>
                 <div className="detail-meta-item">
                   <Radio size={13} />

@@ -1127,3 +1127,518 @@
 		max-height: 260px;
 	}
 }
+
+/* ===== Página de perfil de cliente (reemplaza el panel lateral) ===== */
+
+.profile-page {
+	width: 100%;
+	max-width: 1180px;
+	margin: 0 auto;
+	padding: 32px 24px 48px;
+}
+
+.profile-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 20px;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: #8b90a0;
+	font-size: 12.5px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: color 0.16s ease;
+}
+
+.profile-back:hover {
+	color: #e7eaf0;
+}
+
+.profile-header {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 28px;
+}
+
+.profile-name {
+	margin: 0 0 6px;
+	font-size: 22px;
+	font-weight: 700;
+	color: #f8fafc;
+}
+
+.profile-grid {
+	display: flex;
+	gap: 22px;
+	align-items: flex-start;
+}
+
+.profile-contact-card {
+	width: 300px;
+	flex-shrink: 0;
+	border-radius: 16px;
+	border: 1px solid rgba(255, 255, 255, 0.09);
+	background: #0a0d14;
+	padding: 22px;
+	position: sticky;
+	top: 24px;
+}
+
+.profile-contact-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin: 16px 0 22px;
+	padding: 0;
+	list-style: none;
+}
+
+.profile-contact-list li {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 12.5px;
+	color: #b6bcca;
+}
+
+.profile-contact-list li svg {
+	flex-shrink: 0;
+	color: #5e6472;
+}
+
+.profile-stats {
+	display: flex;
+	gap: 10px;
+	padding-top: 18px;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.profile-stat {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+}
+
+.profile-stat-number {
+	font-size: 18px;
+	font-weight: 700;
+	color: #f8fafc;
+}
+
+.profile-stat-label {
+	font-size: 10px;
+	color: #6f7482;
+	text-align: center;
+}
+
+.profile-summary-column {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.profile-summary-card {
+	border-radius: 16px;
+	border: 1px solid rgba(255, 255, 255, 0.09);
+	background: #0a0d14;
+	padding: 20px 22px;
+}
+
+.profile-summary-card-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 4px;
+}
+
+.profile-summary-card-header .detail-section-title {
+	margin-bottom: 0;
+}
+
+.profile-see-all {
+	font-size: 11.5px;
+	font-weight: 600;
+	color: #4f7cff;
+	text-decoration: none;
+}
+
+.profile-see-all:hover {
+	color: #7b9cff;
+}
+
+.profile-see-all--muted {
+	color: #6f7482;
+	cursor: default;
+}
+
+.profile-mini-list {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin: 10px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.profile-mini-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 10px 8px;
+	border-radius: 10px;
+	transition: background 0.16s ease;
+}
+
+.profile-mini-item:hover {
+	background: rgba(255, 255, 255, 0.03);
+}
+
+.profile-mini-item-icon {
+	flex-shrink: 0;
+	margin-top: 2px;
+	color: #4f7cff;
+}
+
+.profile-mini-item-body {
+	flex: 1;
+	min-width: 0;
+}
+
+.profile-mini-item-title {
+	margin: 0;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: #e7eaf0;
+}
+
+.profile-mini-item-link {
+	display: block;
+	padding: 0;
+	border: none;
+	background: transparent;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: #e7eaf0;
+	text-align: left;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.profile-mini-item-link:hover {
+	color: #7b9cff;
+	text-decoration: underline;
+}
+
+.profile-mini-item-subtitle {
+	margin: 2px 0 0;
+	font-size: 11px;
+	color: #6f7482;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.proposal-status {
+	display: inline-flex;
+	flex-shrink: 0;
+	padding: 2px 8px;
+	border-radius: 999px;
+	font-size: 10px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	background: rgba(148, 163, 184, 0.16);
+	color: #94a3b8;
+}
+
+.proposal-status--accepted {
+	background: rgba(16, 185, 129, 0.16);
+	color: #34d399;
+}
+
+.proposal-status--rejected {
+	background: rgba(248, 113, 113, 0.16);
+	color: #f87171;
+}
+
+.proposal-status--pending {
+	background: rgba(251, 191, 36, 0.16);
+	color: #fbbf24;
+}
+
+@media (max-width: 860px) {
+	.profile-grid {
+		flex-direction: column;
+	}
+
+	.profile-contact-card {
+		width: 100%;
+		position: static;
+	}
+}
+
+/* ===== Páginas de documento (detalle de requerimiento / propuesta) ===== */
+
+.document-page {
+	width: 100%;
+	max-width: 1080px;
+	margin: 0 auto;
+	padding: 32px 24px 56px;
+}
+
+.document-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 26px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.document-title {
+	margin: 0 0 6px;
+	font-size: 20px;
+	font-weight: 700;
+	color: #f8fafc;
+}
+
+.document-subtitle {
+	margin: 0;
+	font-size: 12.5px;
+	color: #8b90a0;
+}
+
+.document-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 24px;
+	margin-bottom: 24px;
+}
+
+.document-grid--wide {
+	grid-template-columns: 1.6fr 1fr;
+}
+
+.document-section {
+	margin-bottom: 24px;
+}
+
+.document-section:last-child {
+	margin-bottom: 0;
+}
+
+.document-paragraph {
+	margin: 10px 0 0;
+	font-size: 13px;
+	line-height: 1.65;
+	color: #c4cded;
+}
+
+.checklist {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 12px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.checklist li {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	font-size: 12.5px;
+	line-height: 1.5;
+	color: #dbe2f0;
+}
+
+.checklist li svg {
+	flex-shrink: 0;
+	margin-top: 2px;
+	color: #34d399;
+}
+
+.checklist--warning li svg {
+	color: #fbbf24;
+}
+
+.checklist--muted li {
+	color: #8b90a0;
+}
+
+.checklist--muted li svg {
+	color: #6f7482;
+}
+
+.priority-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 12px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.priority-list li {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 9px 12px;
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.07);
+	background: #04070d;
+	font-size: 12.5px;
+	color: #dbe2f0;
+}
+
+.phase-list {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	margin: 12px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.phase-list li {
+	display: flex;
+	gap: 12px;
+}
+
+.phase-list-number {
+	display: inline-flex;
+	flex-shrink: 0;
+	height: 22px;
+	width: 22px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: rgba(79, 124, 255, 0.14);
+	color: #7b9cff;
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.phase-list-title {
+	margin: 0;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: #e7eaf0;
+}
+
+.phase-list-description {
+	margin: 3px 0 0;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #8b90a0;
+}
+
+/* Hoja de propuesta comercial */
+
+.proposal-sheet {
+	border-radius: 18px;
+	border: 1px solid rgba(255, 255, 255, 0.09);
+	background: #0a0d14;
+	padding: 28px;
+}
+
+.proposal-main {
+	min-width: 0;
+}
+
+.proposal-cost-card {
+	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	background: #04070d;
+	padding: 18px;
+	align-self: flex-start;
+}
+
+.cost-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin: 12px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cost-list-item {
+	padding-bottom: 12px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cost-list-item:last-child {
+	border-bottom: none;
+	padding-bottom: 0;
+}
+
+.cost-list-item-top {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+	font-size: 12px;
+	color: #dbe2f0;
+}
+
+.cost-list-item-amount {
+	flex-shrink: 0;
+	font-weight: 700;
+	color: #e7eaf0;
+}
+
+.cost-list-item-description {
+	margin: 3px 0 0;
+	font-size: 11px;
+	color: #6f7482;
+}
+
+.cost-total {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-top: 16px;
+	padding-top: 14px;
+	border-top: 1px solid rgba(255, 255, 255, 0.09);
+	font-size: 12.5px;
+	font-weight: 700;
+	color: #f8fafc;
+}
+
+.cost-total-amount {
+	font-size: 16px;
+	color: #4f7cff;
+}
+
+@media (max-width: 860px) {
+	.document-grid,
+	.document-grid--wide {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Nota libre del cliente, debajo de las estadísticas en la tarjeta de contacto */
+.profile-notes {
+	margin: 14px 0 0;
+	padding-top: 14px;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+	font-size: 12px;
+	line-height: 1.5;
+	color: #8b90a0;
+}
+
+/* Texto de reserva cuando no hay un dato real de empresa */
+.profile-contact-empty {
+	font-style: italic;
+	color: #5e6472;
+}
