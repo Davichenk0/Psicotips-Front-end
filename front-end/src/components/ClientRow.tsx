@@ -1,5 +1,6 @@
 import React from 'react';
-import { Client } from '../context/ClientContext';
+import { useNavigate } from 'react-router-dom';
+import { Client, useClients } from '../context/ClientContext';
 import { ChevronRight } from 'lucide-react';
 
 const statusStyles = {
@@ -9,6 +10,16 @@ const statusStyles = {
 };
 
 export const ClientRow = ({ client }: { client: Client }) => {
+  // Al hacer clic en la fila se navega a la página de perfil completa del cliente
+  // (info + conversaciones + requerimientos + propuestas).
+  const { setSelectedClient } = useClients();
+  const navigate = useNavigate();
+
+  const openProfile = () => {
+    setSelectedClient(client);
+    navigate(`/clientes/${client.id}`);
+  };
+
   // Generar una etiqueta corta para el avatar a partir de las iniciales del cliente.
   const initials = client.name
     .split(' ')                 // Divide el nombre completo en palabras por cada espacio.
@@ -16,9 +27,19 @@ export const ClientRow = ({ client }: { client: Client }) => {
     .join('')                   // Une esas letras en una sola cadena de texto.
     .substring(0, 2);           // Se asegura de recortar el resultado a un máximo de 2 letras.
 
-  // Cada fila es un registro de solo lectura con un hover sutil.
+  // Cada fila es clicable: navega al perfil del cliente con hover sutil.
   return (
-    <tr className="client-row">
+    <tr
+      className="client-row client-row--clickable"
+      onClick={openProfile}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          openProfile();
+        }
+      }}
+    >
       <td>
         <div className="client-cell">
           <div className="client-avatar">{initials}</div>
@@ -26,7 +47,7 @@ export const ClientRow = ({ client }: { client: Client }) => {
             <div className="client-name">{client.name}</div>
             <div className="client-company">
               <span className="client-company-icon">▣</span>
-              {client.company}
+              {client.company || 'Sin empresa'}
             </div>
           </div>
         </div>

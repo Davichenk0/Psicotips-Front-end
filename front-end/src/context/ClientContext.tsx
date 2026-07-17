@@ -7,6 +7,10 @@ export interface Client {
   id: string;
   name: string;
   company: string;
+  email?: string;
+  phone?: string;
+  category?: string;
+  notes?: string;
   status: 'Activo' | 'Prospecto' | 'Inactivo';
   channel: string;
   registrationDate: string;
@@ -21,6 +25,8 @@ interface ClientContextType {
   setSearchTerm: (term: string) => void; // Función para actualizar el término de búsqueda en el contexto.
   statusFilter: string;
   setStatusFilter: (status: string) => void; // Función para actualizar el filtro de estado en el contexto.
+  selectedClient: Client | null; // Cliente elegido en la tabla para ver su detalle (info, conversaciones, requerimientos).
+  setSelectedClient: (client: Client | null) => void; // Función para abrir/cerrar el panel de detalle del cliente.
 }
 
 // Crear un contexto de clientes con un valor inicial indefinido.
@@ -35,6 +41,8 @@ export const ClientProvider = ({ children }: { children: ReactNode }) => {
   // El estado de búsqueda se centraliza aquí para evitar pasar props por toda la tabla.
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Todos');
+  // Cliente actualmente seleccionado para mostrar en el panel de detalle (info + conversaciones + requerimientos).
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   useEffect(() => {
     if (!token) {
@@ -76,7 +84,7 @@ export const ClientProvider = ({ children }: { children: ReactNode }) => {
 
   // Proporcionar el estado y las funciones de clientes a los componentes hijos a través del contexto.
   return (
-    <ClientContext.Provider value={{ clients, loading, error, searchTerm, setSearchTerm, statusFilter, setStatusFilter }}>
+    <ClientContext.Provider value={{ clients, loading, error, searchTerm, setSearchTerm, statusFilter, setStatusFilter, selectedClient, setSelectedClient }}>
       {children}
     </ClientContext.Provider>
   );

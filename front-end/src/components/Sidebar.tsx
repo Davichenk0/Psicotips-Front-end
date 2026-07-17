@@ -1,15 +1,18 @@
 import React from 'react';
-import { ChevronRight, GraduationCap, LayoutDashboard, MessageSquare, FileText, Briefcase, Users, Zap } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ChevronRight, GraduationCap, LayoutDashboard, Users, Zap } from 'lucide-react';
 
 export const Sidebar = () => {
-  // El estado activo queda fijo en el módulo de Clientes en esta vista.
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Cada elemento con "path" navega de verdad; los que no tienen path siguen siendo decorativos por ahora.
+  // "Conversaciones" y "Requerimientos" ya no van aquí: ahora viven dentro del perfil de cada cliente.
+  // "Propuestas" se quitó por ahora: ese módulo no se va a usar.
   const menuItems = [
-    { name: 'Resumen', icon: <LayoutDashboard size={16} />, active: false },        // Elemento de menú que representa la sección de resumen del dashboard.
-    { name: 'Clientes', icon: <Users size={16} />, active: true },                  // Elemento de menú que representa la sección de clientes del dashboard, actualmente activo.
-    { name: 'Conversaciones', icon: <MessageSquare size={16} />, active: false },   // Elemento de menú que representa la sección de conversaciones del dashboard.
-    { name: 'Requerimientos', icon: <FileText size={16} />, active: false },        // Elemento de menú que representa la sección de requerimientos del dashboard.
-    { name: 'Propuestas', icon: <Briefcase size={16} />, active: false },           // Elemento de menú que representa la sección de propuestas del dashboard.
-    { name: 'Conocimiento', icon: <GraduationCap size={16} />, active: false },     // Elemento de menú que representa la sección de conocimiento del dashboard.
+    { name: 'Resumen', icon: <LayoutDashboard size={16} />, path: null },
+    { name: 'Clientes', icon: <Users size={16} />, path: '/' },
+    { name: 'Conocimiento', icon: <GraduationCap size={16} />, path: null },
   ];
 
   return (
@@ -25,16 +28,22 @@ export const Sidebar = () => {
         {/* La navegación principal mantiene la barra compacta y fácil de escanear. */}
         <nav className="sidebar-menu">
           <p className="sidebar-section-label">Principal</p>
-          {menuItems.map((item) => (
-            <button
-              key={item.name}
-              className={`sidebar-menu-item ${item.active ? 'sidebar-menu-item--active' : ''}`}
-            >
-              {item.icon}
-              {item.name}
-              {item.active ? <ChevronRight size={16} className="sidebar-menu-arrow" /> : null}
-            </button>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = item.path !== null && location.pathname === item.path;
+
+            return (
+              <button
+                key={item.name}
+                className={`sidebar-menu-item ${isActive ? 'sidebar-menu-item--active' : ''}`}
+                onClick={() => item.path && navigate(item.path)}
+                disabled={!item.path}
+              >
+                {item.icon}
+                {item.name}
+                {isActive ? <ChevronRight size={16} className="sidebar-menu-arrow" /> : null}
+              </button>
+            );
+          })}
         </nav>
       </div>
       

@@ -20,6 +20,11 @@ interface BackendContact {
   registration_date?: string;
   registrationDate?: string;
   updated_at?: string;
+  industry?: string;
+  category?: string;
+  company?: string;
+  notes?: string;
+  description?: string;
 }
 
 interface PaginatedResponse<T> {
@@ -62,7 +67,11 @@ const mapContactToClient = (contact: BackendContact, index: number): Client => {
   return {
     id: String(contact.id ?? index),
     name: fullName,
-    company: contact.email || contact.phone || 'Sin empresa',
+    company: contact.company || contact.industry || '',
+    email: contact.email,
+    phone: contact.phone,
+    category: contact.industry || contact.category,
+    notes: contact.notes || contact.description,
     status: normalizeStatus(contact.status || contact.state),
     channel: contact.channel || contact.source || contact.origin || 'WhatsApp',
     registrationDate: formatDate(
@@ -75,7 +84,8 @@ const mapContactToClient = (contact: BackendContact, index: number): Client => {
   };
 };
 
-const extractContacts = (payload: BackendContact[] | PaginatedResponse<BackendContact>) => {
+// Extractor genérico: el backend a veces devuelve un arreglo plano y a veces una respuesta paginada { results: [...] }.
+const extractList = <T,>(payload: T[] | PaginatedResponse<T>): T[] => {
   if (Array.isArray(payload)) {
     return payload;
   }
@@ -98,5 +108,477 @@ export const getContacts = async (token: string): Promise<Client[]> => {
   }
 
   const payload = await response.json() as BackendContact[] | PaginatedResponse<BackendContact>;
-  return extractContacts(payload).map(mapContactToClient);
+  return extractList(payload).map(mapContactToClient);
+};
+
+// ===== Conversaciones y requerimientos del cliente seleccionado =====
+// NOTA: estos endpoints siguen el mismo patrón que /api/crm/contacts/,
+// pero aún no están confirmados con el backend. Si el back usa otra ruta
+// (ej. /api/crm/conversations/?contact=<id>), solo hay que ajustar la URL aquí abajo.
+// Mientras tanto, si el endpoint responde 404 o falla, devolvemos un arreglo vacío
+// en lugar de romper el panel de detalle.
+
+export interface Conversation {
+  id: string;
+  channel: string;
+  date: string;
+  preview: string;
+  messageCount?: number;
+  status: 'Activa' | 'En proceso' | 'Finalizada';
+  assignedTo?: string;
+}
+
+export interface RequirementPriorityItem {
+  label: string;
+  level: 'Alta' | 'Media' | 'Baja';
+}
+
+export interface Requirement {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  dueDate?: string;
+  createdDate?: string;
+  priority: 'Alta' | 'Media' | 'Baja';
+  type?: string;
+  assignedTo?: string;
+  botSolution?: string;
+  // Campos opcionales que arman la vista de detalle completa, tipo documento de análisis.
+  identifiedNeeds?: string[];
+  objectives?: string[];
+  scope?: string;
+  priorities?: RequirementPriorityItem[];
+  restrictions?: string[];
+}
+
+interface BackendConversation {
+  id?: string | number;
+  channel?: string;
+  source?: string;
+  date?: string;
+  created_at?: string;
+  createdAt?: string;
+  last_message?: string;
+  lastMessage?: string;
+  message?: string;
+  preview?: string;
+  message_count?: number;
+  messageCount?: number;
+  status?: string;
+  state?: string;
+  assigned_to?: string;
+  assignedTo?: string;
+  agent?: string;
+}
+
+interface BackendRequirement {
+  id?: string | number;
+  title?: string;
+  name?: string;
+  description?: string;
+  detail?: string;
+  status?: string;
+  state?: string;
+  due_date?: string;
+  dueDate?: string;
+  created_at?: string;
+  createdAt?: string;
+  priority?: string;
+  type?: string;
+  category?: string;
+  assigned_to?: string;
+  assignedTo?: string;
+  agent?: string;
+  bot_solution?: string;
+  botSolution?: string;
+  suggested_solution?: string;
+  ai_suggestion?: string;
+  // Campos del documento de análisis completo (nombres flexibles por si el backend usa otros).
+  identified_needs?: string[] | string;
+  identifiedNeeds?: string[] | string;
+  needs?: string[] | string;
+  objectives?: string[] | string;
+  project_objectives?: string[] | string;
+  scope?: string;
+  alcance?: string;
+  priorities?: Array<{ label?: string; name?: string; level?: string; priority?: string }> | string;
+  restrictions?: string[] | string;
+  restricciones?: string[] | string;
+}
+
+// Normaliza un campo que puede llegar como arreglo o como texto (separado por saltos de línea o comas).
+const toStringArray = (raw?: string[] | string): string[] => {
+  if (!raw) {
+    return [];
+  }
+
+  if (Array.isArray(raw)) {
+    return raw.filter(Boolean);
+  }
+
+  return raw
+    .split(/\r?\n|,(?![^(]*\))/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
+const toPriorityItems = (
+  raw?: Array<{ label?: string; name?: string; level?: string; priority?: string }> | string
+): RequirementPriorityItem[] => {
+  if (!raw) {
+    return [];
+  }
+
+  if (typeof raw === 'string') {
+    return toStringArray(raw).map((label) => ({ label, level: 'Media' as const }));
+  }
+
+  return raw.map((item) => ({
+    label: item.label || item.name || 'Prioridad',
+    level: normalizePriority(item.level || item.priority),
+  }));
+};
+
+const normalizeConversationStatus = (raw?: string): Conversation['status'] => {
+  const normalized = raw?.toLowerCase();
+
+  if (
+    normalized?.includes('cerr') ||
+    normalized?.includes('closed') ||
+    normalized?.includes('final') ||
+    normalized?.includes('conclu')
+  ) {
+    return 'Finalizada';
+  }
+
+  if (
+    normalized?.includes('espera') ||
+    normalized?.includes('pending') ||
+    normalized?.includes('proceso') ||
+    normalized?.includes('progress')
+  ) {
+    return 'En proceso';
+  }
+
+  return 'Activa';
+};
+
+const normalizePriority = (raw?: string): Requirement['priority'] => {
+  const normalized = raw?.toLowerCase();
+
+  if (normalized?.includes('alt') || normalized?.includes('high') || normalized?.includes('urg')) {
+    return 'Alta';
+  }
+
+  if (normalized?.includes('baj') || normalized?.includes('low')) {
+    return 'Baja';
+  }
+
+  return 'Media';
+};
+
+const mapConversation = (raw: BackendConversation, index: number): Conversation => ({
+  id: String(raw.id ?? index),
+  channel: raw.channel || raw.source || 'WhatsApp',
+  date: formatDate(raw.date || raw.created_at || raw.createdAt),
+  preview: raw.preview || raw.last_message || raw.lastMessage || raw.message || 'Sin mensajes recientes',
+  messageCount: raw.message_count ?? raw.messageCount,
+  status: normalizeConversationStatus(raw.status || raw.state),
+  assignedTo: raw.assigned_to || raw.assignedTo || raw.agent,
+});
+
+const mapRequirement = (raw: BackendRequirement, index: number): Requirement => ({
+  id: String(raw.id ?? index),
+  title: raw.title || raw.name || `Requerimiento ${index + 1}`,
+  description: raw.description || raw.detail || 'Sin descripción',
+  status: raw.status || raw.state || 'Pendiente',
+  dueDate: raw.due_date || raw.dueDate ? formatDate(raw.due_date || raw.dueDate) : undefined,
+  createdDate: raw.created_at || raw.createdAt ? formatDate(raw.created_at || raw.createdAt) : undefined,
+  priority: normalizePriority(raw.priority),
+  type: raw.type || raw.category,
+  assignedTo: raw.assigned_to || raw.assignedTo || raw.agent,
+  botSolution: raw.bot_solution || raw.botSolution || raw.suggested_solution || raw.ai_suggestion,
+  identifiedNeeds: toStringArray(raw.identified_needs || raw.identifiedNeeds || raw.needs),
+  objectives: toStringArray(raw.objectives || raw.project_objectives),
+  scope: raw.scope || raw.alcance,
+  priorities: toPriorityItems(raw.priorities),
+  restrictions: toStringArray(raw.restrictions || raw.restricciones),
+});
+
+// ===== DATOS QUEMADOS DE PRUEBA =====
+// Mientras el backend no tenga listos los endpoints de conversaciones, requerimientos y
+// propuestas, usamos estos datos de ejemplo para poder ver el diseño funcionando.
+// Cuando el backend real esté listo, borra este bloque completo (y los 3 "if" que lo usan
+// más abajo) y todo va a seguir funcionando igual, pero con datos reales.
+export const USE_MOCK_DATA_FALLBACK = true;
+
+const getMockConversations = (): Conversation[] => [
+  {
+    id: 'mock-1',
+    channel: 'WhatsApp',
+    date: '10 de enero, 2025',
+    preview: 'Quedamos en agendar la demo para la próxima semana.',
+    messageCount: 8,
+    status: 'Finalizada',
+    assignedTo: 'Laura Pérez',
+  },
+  {
+    id: 'mock-2',
+    channel: 'Correo',
+    date: '2 de febrero, 2025',
+    preview: 'El cliente pidió una cotización actualizada con el nuevo alcance.',
+    messageCount: 4,
+    status: 'En proceso',
+    assignedTo: 'Laura Pérez',
+  },
+  {
+    id: 'mock-3',
+    channel: 'Web',
+    date: '18 de febrero, 2025',
+    preview: 'Consulta inicial sobre integración con Salesforce.',
+    messageCount: 3,
+    status: 'Activa',
+  },
+];
+
+const getMockRequirements = (): Requirement[] => [
+  {
+    id: 'mock-req-1',
+    title: 'Plataforma de automatización comercial con integración Salesforce',
+    description:
+      'El cliente necesita automatizar tareas manuales del equipo de ventas e integrar sus canales de comunicación.',
+    status: 'Aprobado',
+    createdDate: '10 de enero, 2025',
+    dueDate: '10 de abril, 2025',
+    priority: 'Alta',
+    type: 'Automatización comercial',
+    assignedTo: 'Laura Pérez',
+    botSolution:
+      'Se sugiere implementar un middleware que sincronice los leads capturados por WhatsApp Business API directamente con Salesforce Sales Cloud, evitando el registro manual.',
+    identifiedNeeds: [
+      'Eliminar tareas manuales del equipo de ventas (12 personas)',
+      'Integrar canales de comunicación (WhatsApp, email, CRM)',
+      'Automatizar seguimiento de oportunidades comerciales',
+      'Centralizar información de clientes y prospectos',
+    ],
+    objectives: [
+      'Reducir tiempo administrativo del equipo en un 40%',
+      'Aumentar la tasa de seguimiento oportuno al 100%',
+      'Mejorar la visibilidad del pipeline de ventas',
+      'Integración bidireccional con Salesforce existente',
+    ],
+    scope:
+      'Desarrollo de una plataforma de automatización comercial que incluye: (1) módulo de seguimiento automático de leads con notificaciones vía WhatsApp y correo, (2) integración bidireccional con Salesforce, (3) generador de propuestas desde plantillas configurables, (4) dashboard de métricas en tiempo real. El proyecto no incluye migración de datos históricos ni capacitación extendida.',
+    priorities: [
+      { label: 'Integración con Salesforce', level: 'Alta' },
+      { label: 'Seguridad y control de acceso', level: 'Alta' },
+      { label: 'Notificaciones automáticas en tiempo real', level: 'Alta' },
+      { label: 'Generador de propuestas', level: 'Media' },
+      { label: 'Dashboard de métricas', level: 'Media' },
+      { label: 'Reportes exportables', level: 'Baja' },
+    ],
+    restrictions: [
+      'Presupuesto máximo definido por el cliente: $22.000.000 COP',
+      'Integración limitada con Salesforce Sales Cloud',
+      'Plazo de implementación: 12 semanas',
+      'Cumplimiento con políticas internas de protección de datos del cliente',
+    ],
+  },
+  {
+    id: 'mock-req-2',
+    title: 'Módulo de reportería automatizada para el equipo directivo',
+    description:
+      'El cliente solicitó reportes semanales automáticos con los indicadores clave del embudo de ventas.',
+    status: 'Pendiente',
+    createdDate: '5 de marzo, 2025',
+    dueDate: '20 de mayo, 2025',
+    priority: 'Media',
+    type: 'Reportería',
+    assignedTo: 'Laura Pérez',
+    identifiedNeeds: [
+      'Visibilidad semanal del embudo de ventas para gerencia',
+      'Eliminar el armado manual de reportes en Excel',
+    ],
+    objectives: [
+      'Reducir el tiempo de generación de reportes de 4 horas a minutos',
+      'Enviar automáticamente el reporte cada lunes por correo',
+    ],
+    scope:
+      'Módulo de reportería que consulta datos de Salesforce y genera un PDF con los indicadores clave, enviado automáticamente por correo cada lunes a las 8:00 a.m.',
+    priorities: [
+      { label: 'Automatización del envío semanal', level: 'Alta' },
+      { label: 'Diseño del reporte en PDF', level: 'Media' },
+    ],
+    restrictions: ['Depende de que el módulo de Salesforce ya esté integrado'],
+  },
+];
+
+
+export const getClientConversations = async (clientId: string, token: string): Promise<Conversation[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/crm/contacts/${clientId}/conversations/`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      return USE_MOCK_DATA_FALLBACK ? getMockConversations() : [];
+    }
+
+    const payload = await response.json() as BackendConversation[] | PaginatedResponse<BackendConversation>;
+    const conversations = extractList(payload).map(mapConversation);
+    return conversations.length > 0 || !USE_MOCK_DATA_FALLBACK ? conversations : getMockConversations();
+  } catch {
+    return USE_MOCK_DATA_FALLBACK ? getMockConversations() : [];
+  }
+};
+
+// ===== Mensajes de una conversación específica (carga por partes) =====
+// En vez de traer los 100+ mensajes de un chat de una sola vez (lo que puede trabar la
+// página), se piden por bloques: primero los más recientes, y "Cargar mensajes anteriores"
+// va trayendo bloques más viejos, mismo patrón de WhatsApp Web.
+
+export interface ConversationMessage {
+  id: string;
+  sender: 'cliente' | 'agente' | 'bot';
+  text: string;
+  timestamp: string;
+}
+
+export interface ConversationMessagesPage {
+  messages: ConversationMessage[]; // ordenados de más viejo a más nuevo dentro del bloque
+  hasMore: boolean;
+  total: number;
+}
+
+interface BackendMessage {
+  id?: string | number;
+  sender?: string;
+  role?: string;
+  author?: string;
+  from?: string;
+  text?: string;
+  message?: string;
+  content?: string;
+  body?: string;
+  timestamp?: string;
+  created_at?: string;
+  createdAt?: string;
+  date?: string;
+}
+
+const normalizeSender = (raw?: string): ConversationMessage['sender'] => {
+  const normalized = raw?.toLowerCase();
+
+  if (normalized?.includes('bot') || normalized?.includes('ai') || normalized?.includes('ia')) {
+    return 'bot';
+  }
+
+  if (
+    normalized?.includes('agent') ||
+    normalized?.includes('agente') ||
+    normalized?.includes('asesor') ||
+    normalized?.includes('empresa')
+  ) {
+    return 'agente';
+  }
+
+  return 'cliente';
+};
+
+const mapMessage = (raw: BackendMessage, index: number): ConversationMessage => ({
+  id: String(raw.id ?? index),
+  sender: normalizeSender(raw.sender || raw.role || raw.author || raw.from),
+  text: raw.text || raw.message || raw.content || raw.body || '',
+  timestamp: formatDate(raw.timestamp || raw.created_at || raw.createdAt || raw.date),
+});
+
+// Genera un hilo de mensajes de ejemplo (46 mensajes) para poder ver la paginación funcionando
+// mientras el backend no tenga listo el endpoint de mensajes.
+const MOCK_MESSAGES_FULL: ConversationMessage[] = Array.from({ length: 46 }).map((_, i) => {
+  const isClient = i % 3 !== 0;
+  const day = 1 + Math.floor(i / 4);
+  return {
+    id: `mock-msg-${i + 1}`,
+    sender: isClient ? 'cliente' : i % 9 === 0 ? 'bot' : 'agente',
+    text: isClient
+      ? 'Tengo una duda sobre el avance del proyecto.'
+      : 'Claro, te cuento el estado actual y seguimos coordinando los detalles.',
+    timestamp: `${day} de enero, 2025`,
+  };
+});
+
+const getMockMessagesPage = (offset: number, limit: number): ConversationMessagesPage => {
+  const total = MOCK_MESSAGES_FULL.length;
+  const endIndex = total - offset;
+  const startIndex = Math.max(0, endIndex - limit);
+  const messages = MOCK_MESSAGES_FULL.slice(startIndex, endIndex);
+  return { messages, hasMore: startIndex > 0, total };
+};
+
+// offset = cuántos mensajes recientes ya se cargaron (0 en la primera carga).
+// limit = tamaño del bloque (por defecto 20 mensajes por carga).
+export const getConversationMessages = async (
+  clientId: string,
+  conversationId: string,
+  token: string,
+  offset: number = 0,
+  limit: number = 20
+): Promise<ConversationMessagesPage> => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/crm/contacts/${clientId}/conversations/${conversationId}/messages/?offset=${offset}&limit=${limit}`,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return USE_MOCK_DATA_FALLBACK ? getMockMessagesPage(offset, limit) : { messages: [], hasMore: false, total: 0 };
+    }
+
+    const payload = await response.json();
+    const rawMessages: BackendMessage[] = payload.results || payload.messages || (Array.isArray(payload) ? payload : []);
+
+    if (rawMessages.length === 0 && USE_MOCK_DATA_FALLBACK) {
+      return getMockMessagesPage(offset, limit);
+    }
+
+    const total = payload.count ?? payload.total ?? offset + rawMessages.length;
+    const hasMore = payload.has_more ?? (payload.next != null) ?? offset + rawMessages.length < total;
+
+    return { messages: rawMessages.map(mapMessage), hasMore, total };
+  } catch {
+    return USE_MOCK_DATA_FALLBACK ? getMockMessagesPage(offset, limit) : { messages: [], hasMore: false, total: 0 };
+  }
+};
+
+export const getClientRequirements = async (clientId: string, token: string): Promise<Requirement[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/crm/contacts/${clientId}/requirements/`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      return USE_MOCK_DATA_FALLBACK ? getMockRequirements() : [];
+    }
+
+    const payload = await response.json() as BackendRequirement[] | PaginatedResponse<BackendRequirement>;
+    const requirements = extractList(payload).map(mapRequirement);
+    return requirements.length > 0 || !USE_MOCK_DATA_FALLBACK ? requirements : getMockRequirements();
+  } catch {
+    return USE_MOCK_DATA_FALLBACK ? getMockRequirements() : [];
+  }
 };
