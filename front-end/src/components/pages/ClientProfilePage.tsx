@@ -221,7 +221,13 @@ export const ClientProfilePage = () => {
                   <li key={conversation.id} className="profile-mini-item">
                     <MessageSquare size={14} className="profile-mini-item-icon" />
                     <div className="profile-mini-item-body">
-                      <p className="profile-mini-item-title">Conversación del {conversation.date}</p>
+                      <button
+                        type="button"
+                        className="profile-mini-item-link"
+                        onClick={() => navigate(`/clientes/${client.id}/conversaciones/${conversation.id}`)}
+                      >
+                        Conversación del {conversation.date}
+                      </button>
                       <p className="profile-mini-item-subtitle">
                         {conversation.messageCount ? `${conversation.messageCount} mensajes` : conversation.preview}
                       </p>

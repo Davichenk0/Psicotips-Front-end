@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MessageSquare, FileText, Mail, Radio, CalendarDays, User, Hash } from 'lucide-react';
 import { useClients } from '../../context/ClientContext';
 import { useAuth } from '../../context/AuthContext';
@@ -33,6 +34,7 @@ const priorityStyles: Record<Requirement['priority'], string> = {
 // y una vista rápida de sus requerimientos.
 export const ConversationsPage = () => {
   const { selectedClient } = useClients();
+  const navigate = useNavigate();
   const { token } = useAuth();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -135,7 +137,11 @@ export const ConversationsPage = () => {
                 {!loading && conversations.length > 0 && (
                   <ul className="detail-list">
                     {conversations.map((conversation) => (
-                      <li key={conversation.id} className="detail-list-item">
+                      <li
+                        key={conversation.id}
+                        className="detail-list-item detail-list-item--clickable"
+                        onClick={() => selectedClient && navigate(`/clientes/${selectedClient.id}/conversaciones/${conversation.id}`)}
+                      >
                         <div className="detail-list-item-top">
                           <span className="detail-list-item-tag">{conversation.channel}</span>
                           <span className={conversationStatusStyles[conversation.status]}>

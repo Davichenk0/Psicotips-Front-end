@@ -477,6 +477,130 @@ export const getClientConversations = async (clientId: string, token: string): P
   }
 };
 
+// ===== Mensajes de una conversación específica (carga por partes) =====
+// En vez de traer los 100+ mensajes de un chat de una sola vez (lo que puede trabar la
+// página), se piden por bloques: primero los más recientes, y "Cargar mensajes anteriores"
+// va trayendo bloques más viejos, mismo patrón de WhatsApp Web.
+
+export interface ConversationMessage {
+  id: string;
+  sender: 'cliente' | 'agente' | 'bot';
+  text: string;
+  timestamp: string;
+}
+
+export interface ConversationMessagesPage {
+  messages: ConversationMessage[]; // ordenados de más viejo a más nuevo dentro del bloque
+  hasMore: boolean;
+  total: number;
+}
+
+interface BackendMessage {
+  id?: string | number;
+  sender?: string;
+  role?: string;
+  author?: string;
+  from?: string;
+  text?: string;
+  message?: string;
+  content?: string;
+  body?: string;
+  timestamp?: string;
+  created_at?: string;
+  createdAt?: string;
+  date?: string;
+}
+
+const normalizeSender = (raw?: string): ConversationMessage['sender'] => {
+  const normalized = raw?.toLowerCase();
+
+  if (normalized?.includes('bot') || normalized?.includes('ai') || normalized?.includes('ia')) {
+    return 'bot';
+  }
+
+  if (
+    normalized?.includes('agent') ||
+    normalized?.includes('agente') ||
+    normalized?.includes('asesor') ||
+    normalized?.includes('empresa')
+  ) {
+    return 'agente';
+  }
+
+  return 'cliente';
+};
+
+const mapMessage = (raw: BackendMessage, index: number): ConversationMessage => ({
+  id: String(raw.id ?? index),
+  sender: normalizeSender(raw.sender || raw.role || raw.author || raw.from),
+  text: raw.text || raw.message || raw.content || raw.body || '',
+  timestamp: formatDate(raw.timestamp || raw.created_at || raw.createdAt || raw.date),
+});
+
+// Genera un hilo de mensajes de ejemplo (46 mensajes) para poder ver la paginación funcionando
+// mientras el backend no tenga listo el endpoint de mensajes.
+const MOCK_MESSAGES_FULL: ConversationMessage[] = Array.from({ length: 46 }).map((_, i) => {
+  const isClient = i % 3 !== 0;
+  const day = 1 + Math.floor(i / 4);
+  return {
+    id: `mock-msg-${i + 1}`,
+    sender: isClient ? 'cliente' : i % 9 === 0 ? 'bot' : 'agente',
+    text: isClient
+      ? `Mensaje ${i + 1}: tengo una duda sobre el avance del proyecto.`
+      : `Mensaje ${i + 1}: claro, te cuento el estado actual y seguimos coordinando los detalles.`,
+    timestamp: `${day} de enero, 2025`,
+  };
+});
+
+const getMockMessagesPage = (offset: number, limit: number): ConversationMessagesPage => {
+  const total = MOCK_MESSAGES_FULL.length;
+  const endIndex = total - offset;
+  const startIndex = Math.max(0, endIndex - limit);
+  const messages = MOCK_MESSAGES_FULL.slice(startIndex, endIndex);
+  return { messages, hasMore: startIndex > 0, total };
+};
+
+// offset = cuántos mensajes recientes ya se cargaron (0 en la primera carga).
+// limit = tamaño del bloque (por defecto 20 mensajes por carga).
+export const getConversationMessages = async (
+  clientId: string,
+  conversationId: string,
+  token: string,
+  offset: number = 0,
+  limit: number = 20
+): Promise<ConversationMessagesPage> => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/crm/contacts/${clientId}/conversations/${conversationId}/messages/?offset=${offset}&limit=${limit}`,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return USE_MOCK_DATA_FALLBACK ? getMockMessagesPage(offset, limit) : { messages: [], hasMore: false, total: 0 };
+    }
+
+    const payload = await response.json();
+    const rawMessages: BackendMessage[] = payload.results || payload.messages || (Array.isArray(payload) ? payload : []);
+
+    if (rawMessages.length === 0 && USE_MOCK_DATA_FALLBACK) {
+      return getMockMessagesPage(offset, limit);
+    }
+
+    const total = payload.count ?? payload.total ?? offset + rawMessages.length;
+    const hasMore = payload.has_more ?? (payload.next != null) ?? offset + rawMessages.length < total;
+
+    return { messages: rawMessages.map(mapMessage), hasMore, total };
+  } catch {
+    return USE_MOCK_DATA_FALLBACK ? getMockMessagesPage(offset, limit) : { messages: [], hasMore: false, total: 0 };
+  }
+};
+
 export const getClientRequirements = async (clientId: string, token: string): Promise<Requirement[]> => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/crm/contacts/${clientId}/requirements/`, {
