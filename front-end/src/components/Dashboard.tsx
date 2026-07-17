@@ -5,7 +5,6 @@ import { Sidebar } from './Sidebar';
 import { ClientsPage } from './pages/ClientsPage';
 import { ClientProfilePage } from './pages/ClientProfilePage';
 import { RequirementDetailPage } from './pages/RequirementDetailPage';
-import { ProposalDetailPage } from './pages/ProposalDetailPage';
 import { ConversationThreadPage } from './pages/ConversationThreadPage';
 import { ConversationsPage } from './pages/ConversationsPage';
 import { RequirementsPage } from './pages/RequirementsPage';
@@ -58,7 +57,6 @@ export const Dashboard = () => {
 					<Route path="/clientes/:clientId" element={<ClientProfilePage />} />
 					<Route path="/clientes/:clientId/conversaciones/:conversationId" element={<ConversationThreadPage />} />
 					<Route path="/clientes/:clientId/requerimientos/:reqId" element={<RequirementDetailPage />} />
-					<Route path="/clientes/:clientId/propuestas/:proposalId" element={<ProposalDetailPage />} />
 					<Route path="/conversaciones" element={<ConversationsPage />} />
 					<Route path="/requerimientos" element={<RequirementsPage />} />
 				</Routes>

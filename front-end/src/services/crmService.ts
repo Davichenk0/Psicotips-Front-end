@@ -414,46 +414,6 @@ const getMockRequirements = (): Requirement[] => [
   },
 ];
 
-const getMockProposals = (clientName: string, companyName: string): Proposal[] => [
-  {
-    id: 'mock-prop-1',
-    title: 'Propuesta Comercial: Plataforma de Automatización Comercial',
-    status: 'Aceptada',
-    createdDate: '15 de enero, 2025',
-    executiveSummary:
-      'TechVentures S.A. requiere una solución que elimine ineficiencias manuales de su equipo comercial de 12 personas. Proponemos una plataforma cloud integrada con Salesforce que automatiza el seguimiento de leads, genera propuestas desde plantillas y ofrece visibilidad real del pipeline, todo dentro de un presupuesto de $22M COP y un plazo de 12 semanas.',
-    scopeIncluded: [
-      'Integración bidireccional con Salesforce Sales Cloud',
-      'Módulo de seguimiento automático con notificaciones por WhatsApp Business API y correo',
-      'Generador de propuestas con plantillas configurables',
-      'Dashboard de métricas y reportería',
-      'Despliegue en AWS con SLA del 99.5%',
-      'Capacitación para hasta 15 usuarios',
-    ],
-    exclusions: [
-      'Migración de datos históricos de Salesforce',
-      'Desarrollo de reportes a la medida',
-      'Licencias de terceros (Salesforce, WhatsApp Business API)',
-      'Soporte post-lanzamiento (se cotiza aparte)',
-    ],
-    phases: [
-      { phase: 'Fase 1 (semanas 1-4)', description: 'Análisis, diseño y setup de infraestructura.' },
-      { phase: 'Fase 2 (semanas 5-10)', description: 'Desarrollo iterativo con entregables parciales.' },
-      { phase: 'Fase 3 (semanas 11-12)', description: 'Pruebas de aceptación, despliegue y capacitación.' },
-    ],
-    costBreakdown: [
-      { id: 'c1', label: 'Análisis y arquitectura de solución', description: 'Levantamiento de requerimientos, diseño de arquitectura cloud y plan de proyecto.', amount: 3500000 },
-      { id: 'c2', label: 'Desarrollo módulo de seguimiento de leads', description: 'Automatización de seguimiento con notificaciones WhatsApp y correo, integración con Salesforce.', amount: 8000000 },
-      { id: 'c3', label: 'Desarrollo generador de propuestas', description: 'Motor de generación de propuestas desde plantillas con variables dinámicas.', amount: 4500000 },
-      { id: 'c4', label: 'Dashboard de métricas y reportería', description: 'Panel con KPIs de ventas, embudo y reportes exportables.', amount: 3000000 },
-      { id: 'c5', label: 'Pruebas, despliegue y capacitación', description: 'QA, despliegue en AWS y capacitación al equipo de 15 usuarios.', amount: 2000000 },
-    ],
-    totalEstimated: 21000000,
-    clientName: clientName || 'Ana García',
-    companyName: companyName || 'TechVentures S.A.',
-  },
-];
-
 
 export const getClientConversations = async (clientId: string, token: string): Promise<Conversation[]> => {
   try {
@@ -546,8 +506,8 @@ const MOCK_MESSAGES_FULL: ConversationMessage[] = Array.from({ length: 46 }).map
     id: `mock-msg-${i + 1}`,
     sender: isClient ? 'cliente' : i % 9 === 0 ? 'bot' : 'agente',
     text: isClient
-      ? `Mensaje ${i + 1}: tengo una duda sobre el avance del proyecto.`
-      : `Mensaje ${i + 1}: claro, te cuento el estado actual y seguimos coordinando los detalles.`,
+      ? 'Tengo una duda sobre el avance del proyecto.'
+      : 'Claro, te cuento el estado actual y seguimos coordinando los detalles.',
     timestamp: `${day} de enero, 2025`,
   };
 });
@@ -620,112 +580,5 @@ export const getClientRequirements = async (clientId: string, token: string): Pr
     return requirements.length > 0 || !USE_MOCK_DATA_FALLBACK ? requirements : getMockRequirements();
   } catch {
     return USE_MOCK_DATA_FALLBACK ? getMockRequirements() : [];
-  }
-};
-
-// ===== Propuestas comerciales del cliente =====
-// Mismo patrón de los otros dos módulos: si el endpoint no existe todavía, devolvemos un
-// arreglo vacío en lugar de romper la vista.
-
-export interface ProposalCostItem {
-  id: string;
-  label: string;
-  description?: string;
-  amount: number;
-}
-
-export interface ProposalPhase {
-  phase: string;
-  description: string;
-}
-
-export interface Proposal {
-  id: string;
-  title: string;
-  status: string;
-  createdDate: string;
-  executiveSummary: string;
-  scopeIncluded: string[];
-  exclusions: string[];
-  phases: ProposalPhase[];
-  costBreakdown: ProposalCostItem[];
-  totalEstimated: number;
-  clientName: string;
-  companyName: string;
-}
-
-interface BackendProposal {
-  id?: string | number;
-  title?: string;
-  name?: string;
-  status?: string;
-  state?: string;
-  created_at?: string;
-  createdAt?: string;
-  executive_summary?: string;
-  executiveSummary?: string;
-  summary?: string;
-  scope_included?: string[] | string;
-  scopeIncluded?: string[] | string;
-  exclusions?: string[] | string;
-  phases?: Array<{ phase?: string; name?: string; description?: string }>;
-  methodology?: Array<{ phase?: string; name?: string; description?: string }>;
-  cost_breakdown?: Array<{ id?: string | number; label?: string; name?: string; description?: string; amount?: number }>;
-  costBreakdown?: Array<{ id?: string | number; label?: string; name?: string; description?: string; amount?: number }>;
-  total_estimated?: number;
-  totalEstimated?: number;
-  client_name?: string;
-  clientName?: string;
-  company_name?: string;
-  companyName?: string;
-}
-
-const mapProposal = (raw: BackendProposal, index: number, fallbackClientName: string, fallbackCompany: string): Proposal => ({
-  id: String(raw.id ?? index),
-  title: raw.title || raw.name || `Propuesta ${index + 1}`,
-  status: raw.status || raw.state || 'Pendiente',
-  createdDate: formatDate(raw.created_at || raw.createdAt),
-  executiveSummary: raw.executive_summary || raw.executiveSummary || raw.summary || 'Sin resumen ejecutivo.',
-  scopeIncluded: toStringArray(raw.scope_included || raw.scopeIncluded),
-  exclusions: toStringArray(raw.exclusions),
-  phases: (raw.phases || raw.methodology || []).map((phase, phaseIndex) => ({
-    phase: phase.phase || phase.name || `Fase ${phaseIndex + 1}`,
-    description: phase.description || '',
-  })),
-  costBreakdown: (raw.cost_breakdown || raw.costBreakdown || []).map((item, itemIndex) => ({
-    id: String(item.id ?? itemIndex),
-    label: item.label || item.name || `Ítem ${itemIndex + 1}`,
-    description: item.description,
-    amount: item.amount ?? 0,
-  })),
-  totalEstimated: raw.total_estimated ?? raw.totalEstimated ?? 0,
-  clientName: raw.client_name || raw.clientName || fallbackClientName,
-  companyName: raw.company_name || raw.companyName || fallbackCompany,
-});
-
-export const getClientProposals = async (
-  clientId: string,
-  token: string,
-  clientName: string = '',
-  companyName: string = ''
-): Promise<Proposal[]> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/crm/contacts/${clientId}/proposals/`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      return USE_MOCK_DATA_FALLBACK ? getMockProposals(clientName, companyName) : [];
-    }
-
-    const payload = await response.json() as BackendProposal[] | PaginatedResponse<BackendProposal>;
-    const proposals = extractList(payload).map((raw, index) => mapProposal(raw, index, clientName, companyName));
-    return proposals.length > 0 || !USE_MOCK_DATA_FALLBACK ? proposals : getMockProposals(clientName, companyName);
-  } catch {
-    return USE_MOCK_DATA_FALLBACK ? getMockProposals(clientName, companyName) : [];
   }
 };

@@ -9,7 +9,6 @@ import {
   CalendarDays,
   MessageSquare,
   FileText,
-  Briefcase,
   Building2,
 } from 'lucide-react';
 import { useClients } from '../../context/ClientContext';
@@ -17,10 +16,8 @@ import { useAuth } from '../../context/AuthContext';
 import {
   Conversation,
   Requirement,
-  Proposal,
   getClientConversations,
   getClientRequirements,
-  getClientProposals,
   USE_MOCK_DATA_FALLBACK,
 } from '../../services/crmService';
 
@@ -34,13 +31,6 @@ const conversationStatusStyles: Record<Conversation['status'], string> = {
   Activa: 'conversation-status conversation-status--open',
   'En proceso': 'conversation-status conversation-status--waiting',
   Finalizada: 'conversation-status conversation-status--closed',
-};
-
-const proposalStatusStyles: Record<string, string> = {
-  Aceptada: 'proposal-status proposal-status--accepted',
-  Aprobada: 'proposal-status proposal-status--accepted',
-  Rechazada: 'proposal-status proposal-status--rejected',
-  Pendiente: 'proposal-status proposal-status--pending',
 };
 
 // Nota de ejemplo mientras el backend no mande un campo "notes" real para el contacto.
@@ -58,7 +48,6 @@ export const ClientProfilePage = () => {
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
-  const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
 
   // El cliente puede venir ya seleccionado en el contexto (si se navegó desde la tabla),
@@ -81,16 +70,14 @@ export const ClientProfilePage = () => {
 
     const loadAll = async () => {
       setLoading(true);
-      const [conversationsResult, requirementsResult, proposalsResult] = await Promise.all([
+      const [conversationsResult, requirementsResult] = await Promise.all([
         getClientConversations(client.id, token),
         getClientRequirements(client.id, token),
-        getClientProposals(client.id, token, client.name, client.company),
       ]);
 
       if (!cancelled) {
         setConversations(conversationsResult);
         setRequirements(requirementsResult);
-        setProposals(proposalsResult);
         setLoading(false);
       }
     };
@@ -184,10 +171,6 @@ export const ClientProfilePage = () => {
               <span className="profile-stat-number">{requirements.length}</span>
               <span className="profile-stat-label">Requerimientos</span>
             </div>
-            <div className="profile-stat">
-              <span className="profile-stat-number">{proposals.length}</span>
-              <span className="profile-stat-label">Propuestas</span>
-            </div>
           </div>
 
           {(client.notes || USE_MOCK_DATA_FALLBACK) && (
@@ -278,46 +261,6 @@ export const ClientProfilePage = () => {
                     </div>
                     <span className="requirement-status">
                       {requirement.status}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          {/* Propuestas */}
-          <section className="profile-summary-card">
-            <div className="profile-summary-card-header">
-              <h3 className="detail-section-title">
-                <Briefcase size={14} />
-                Propuestas
-              </h3>
-              <span className="profile-see-all profile-see-all--muted">{proposals.length} en total</span>
-            </div>
-
-            {loading && <p className="detail-empty">Cargando...</p>}
-
-            {!loading && proposals.length === 0 && (
-              <p className="detail-empty">Sin propuestas registradas.</p>
-            )}
-
-            {!loading && proposals.length > 0 && (
-              <ul className="profile-mini-list">
-                {proposals.slice(0, 3).map((proposal) => (
-                  <li key={proposal.id} className="profile-mini-item">
-                    <Briefcase size={14} className="profile-mini-item-icon" />
-                    <div className="profile-mini-item-body">
-                      <button
-                        type="button"
-                        className="profile-mini-item-link"
-                        onClick={() => navigate(`/clientes/${client.id}/propuestas/${proposal.id}`)}
-                      >
-                        {proposal.title}
-                      </button>
-                      <p className="profile-mini-item-subtitle">Creada el {proposal.createdDate}</p>
-                    </div>
-                    <span className={proposalStatusStyles[proposal.status] || 'proposal-status'}>
-                      {proposal.status}
                     </span>
                   </li>
                 ))}
