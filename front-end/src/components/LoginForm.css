@@ -1,0 +1,294 @@
+/* Variables de tema para el login: colores base, estados y acentos visuales. */
+:root {
+  --login-bg: #06080d;
+  --login-panel: #090c14;
+  --login-border: rgba(255, 255, 255, 0.1);
+  --login-text: #ecf0f8;
+  --login-muted: #8a91a1;
+  --login-input-bg: #0f1420;
+  --login-focus: #fffb00;
+  --login-button: #ffe600;
+  --login-button-hover: #152583;
+  --login-error-bg: rgba(220, 70, 70, 0.14);
+  --login-error-border: rgba(220, 70, 70, 0.36);
+  --login-error-text: #ff8f8f;
+}
+
+/* Contenedor principal a pantalla completa, dividido en dos columnas en desktop. */
+.login-screen {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(26, 188, 111, 0.08) 0, transparent 38%),
+    radial-gradient(circle at 80% 80%, rgba(69, 95, 178, 0.08) 0, transparent 42%),
+    var(--login-bg);
+  color: var(--login-text);
+}
+
+/* Altura minima para que cada panel ocupe toda la ventana visible. */
+.login-panel {
+  min-height: 100vh;
+}
+
+/* Panel izquierdo del formulario con separador vertical y layout en columna. */
+.login-panel--form {
+  border-right: 1px solid var(--login-border);
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fila de marca (logo + nombre) en la parte superior del panel izquierdo. */
+.login-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Tamano y recorte del isotipo para mantener proporcion consistente. */
+.login-brand-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Color del nombre de marca para asegurar contraste en fondo oscuro. */
+.login-brand-name {
+  color: #ffffff;
+}
+
+/* Caja central del contenido del formulario con ancho maximo controlado. */
+.login-content {
+  width: min(430px, 100%);
+  margin: clamp(40px, 10vh, 90px) auto 0;
+}
+
+/* Titulo principal del login con escalado responsivo. */
+.login-title {
+  margin: 0;
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Texto secundario bajo el titulo para contexto rapido de la pantalla. */
+.login-subtitle {
+  margin: 10px 0 0;
+  font-size: 16px;
+  color: var(--login-muted);
+}
+
+/* Caja de error visible cuando falla el inicio de sesion. */
+.login-error {
+  margin: 22px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--login-error-border);
+  background: var(--login-error-bg);
+  color: var(--login-error-text);
+  font-size: 14px;
+}
+
+/* Espaciado superior del formulario respecto al subtitulo. */
+.login-form {
+  margin-top: 26px;
+}
+
+/* Separacion vertical entre campos del formulario. */
+.login-field {
+  margin-bottom: 18px;
+}
+
+/* Etiqueta de cada input con lectura clara y jerarquia visual. */
+.login-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #d6ddeb;
+}
+
+/* Estilo base de los inputs: borde suave, fondo oscuro y transiciones de foco. */
+.login-field input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--login-border);
+  background: var(--login-input-bg);
+  padding: 12px 14px;
+  color: var(--login-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Color del placeholder para distinguir texto sugerido del valor real. */
+.login-field input::placeholder {
+  color: #70788b;
+}
+
+/* Estado focus del input para mejorar accesibilidad y feedback visual. */
+.login-field input:focus {
+  outline: none;
+  border-color: var(--login-focus);
+  box-shadow: 0 0 0 3px rgba(42, 197, 111, 0.2);
+}
+
+/* Boton principal de submit con ancho completo y estilo de accion primaria. */
+.login-submit {
+  width: 100%;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--login-button);
+  padding: 12px 14px;
+  color: #ebfff4;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Interaccion hover del boton para reforzar que es clickeable. */
+.login-submit:hover:not(:disabled) {
+  background: var(--login-button-hover);
+  transform: translateY(-1px);
+}
+
+/* Estado deshabilitado durante carga para evitar doble envio. */
+.login-submit:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+/* Texto legal/aclaratorio al pie del formulario. */
+.login-footnote {
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--login-muted);
+}
+
+/* Bloque de ayuda en la parte baja del panel izquierdo. */
+.login-bottom-link {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 18px;
+  font-size: 13px;
+  color: var(--login-muted);
+}
+
+/* Enlace de soporte con color mas visible que el texto auxiliar. */
+.login-bottom-link a {
+  color: #c7f5dc;
+}
+
+/* Panel derecho con centrado vertical/horizontal del mensaje de marca. */
+.login-panel--quote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:24px;
+}
+
+/* Limita ancho del bloque de cita para mantener lectura comoda. */
+.login-quote-wrap {
+  width: min(500px, 100%);
+}
+
+/* Marca grafica de apertura de cita con peso visual alto. */
+.login-quote-mark {
+  margin: 0;
+  color: #3a4358;
+  font-size: 76px;
+  font-weight: 700;
+  line-height: 0.6;
+}
+
+/* Texto principal de valor/propuesta en el panel derecho. */
+.login-quote {
+  margin: 12px 0 0;
+  font-size: clamp(24px, 2.5vw, 40px);
+  line-height: 1.18;
+  letter-spacing: -0.03em;
+  color: #f3f6fd;
+}
+
+/* Fila de firma/autor del mensaje institucional. */
+.login-quote-author {
+  margin-top: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #b2b9ca;
+}
+
+/* Avatar circular del autor con iniciales de la marca. */
+.login-avatar {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background: #121a2a;
+  border: 1px solid var(--login-border);
+  color: #ecf6ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Breakpoint tablet: cambia a una sola columna y ajusta separaciones. */
+@media (max-width: 980px) {
+  /* El layout pasa de dos columnas a una para evitar compresion del formulario. */
+  .login-screen {
+    grid-template-columns: 1fr;
+  }
+
+  /* Se elimina divisor lateral y se usa divisor inferior entre secciones. */
+  .login-panel--form {
+    border-right: 0;
+    border-bottom: 1px solid var(--login-border);
+  }
+
+  /* Reubica el panel de cita para que no compita con el formulario. */
+  .login-panel--quote {
+    min-height: 35vh;
+    align-items: flex-start;
+    padding-top: 36px;
+  }
+
+  /* Reduce tamano de la cita para mejorar lectura en pantallas medianas. */
+  .login-quote {
+    font-size: clamp(20px, 4vw, 30px);
+  }
+}
+
+/* Breakpoint movil: simplifica paddings y oculta el panel derecho. */
+@media (max-width: 620px) {
+  /* Menos padding en movil para aprovechar el ancho disponible. */
+  .login-panel--form {
+    padding: 18px 16px;
+    min-height: auto;
+  }
+
+  /* Ajuste fino de separacion superior del bloque principal. */
+  .login-content {
+    margin-top: 26px;
+  }
+
+  /* El bloque de ayuda puede partirse en varias lineas en pantallas chicas. */
+  .login-bottom-link {
+    margin-top: 24px;
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+
+  /* Se oculta el panel de cita para priorizar la accion de login. */
+  .login-panel--quote {
+    display: none;
+  }
+}
